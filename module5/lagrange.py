@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Callable
 
 
 def lagrange(x: np.ndarray, x0: np.ndarray, y0: np.ndarray):

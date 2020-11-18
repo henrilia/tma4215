@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Callable
 
 
 def _poly_newton_coefficient(x: np.ndarray, y: np.ndarray):
