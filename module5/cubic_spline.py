@@ -35,7 +35,14 @@ class CubicSpline:
         for i in range(n - 1, 0, -1):
             self.z[i] = (self.v[i] - self.h[i] * self.z[i + 1]) / self.u[i]
 
-    def f(self, x: float):
+    def approximate(self, x: np.ndarray):
+        y = np.zeros_like(x)
+        for i in range(len(y)):
+            y[i] = self._approximate(x[i])
+
+        return y
+
+    def _approximate(self, x: float):
         if x == self.t[-1]:
             return self.y[-1]
 
@@ -70,10 +77,8 @@ if __name__ == "__main__":
     cs = CubicSpline(x0, y0)
 
     x = np.arange(0, 10, 0.001)
-    y = np.zeros_like(x)
 
-    for i in range(len(y)):
-        y[i] = cs.f(x[i])
+    y = cs.approximate(x)
 
     plt.plot(x, func(x))
     plt.plot(x, y)
