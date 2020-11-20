@@ -43,6 +43,16 @@ def newton_cotes(a: float, b: float, n: int, f: Callable, closed=True) -> float:
     return (b - a) / n * sum(w * f(x))
 
 
+def composite_trapezoidal(a: float, b: float, f: Callable, m: int) -> float:
+    h = (b - a) / 2 ** m
+    arr = np.arange(1, 2 ** m - 1)
+    T = np.sum(f(a + arr * h))
+
+    T += 1 / 2 * f(a) + 1 / 2 * f(b)
+    T *= h
+    return T
+
+
 if __name__ == "__main__":
 
     def func(x):
@@ -56,3 +66,4 @@ if __name__ == "__main__":
     print(newton_cotes(a, b, 5, func))
     print(newton_cotes(a, b, 20, func))
     print(trapezoidal(a, b, func))
+    print(composite_trapezoidal(a, b, func, 10))
