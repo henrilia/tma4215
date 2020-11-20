@@ -25,15 +25,17 @@ def simpson(a: float, b: float, f: Callable) -> float:
     return (b - a) / 6 * (f(a) + 4 * f((a + b) / 2) + f(b))
 
 
-def newton_coates(a: float, b: float, n: int, f: Callable, closed=True) -> float:
+def newton_cotes(a: float, b: float, n: int, f: Callable, closed=True) -> float:
     x = np.linspace(a, b, n)
     w = np.zeros_like(x)
     if closed:
         lower = 0
         upper = n
+        h = (b - a) / n
     else:
         lower = -1
         upper = n + 1
+        h = (b - a) / (n + 2)
     for i in range(len(w)):
         l = lambda t: lagrange_basis(t, n, i)
         w[i] = quad(l, lower, upper)[0]
@@ -48,9 +50,9 @@ if __name__ == "__main__":
 
     a, b = (-1, 1)
 
-    print(newton_coates(a, b, 1, func))
-    print(newton_coates(a, b, 2, func))
-    print(newton_coates(a, b, 4, func))
-    print(newton_coates(a, b, 5, func))
-    print(newton_coates(a, b, 20, func))
+    print(newton_cotes(a, b, 1, func))
+    print(newton_cotes(a, b, 2, func))
+    print(newton_cotes(a, b, 4, func))
+    print(newton_cotes(a, b, 5, func))
+    print(newton_cotes(a, b, 20, func))
     print(trapezoidal(a, b, func))
