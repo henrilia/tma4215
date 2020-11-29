@@ -1,8 +1,50 @@
 import numpy as np
 import scipy.linalg as la
+from typing import Callable, Tuple
 
 
-def conjugate_gradient(A_func, b, x0, tol, pre_cond):
+VectorFunction = Callable[[np.ndarray], np.ndarray]
+
+
+def identity(r: np.ndarray) -> np.ndarray:
+    return r
+
+
+def pre_cond_jac(v: np.ndarray) -> np.ndarray:
+    u = np.zeros_like(v)
+    for i in range(jac_iter):
+        u += 1 / 4 * (v - A_func(u))
+
+    return u
+
+
+def steepest_descent(
+    A_func: VectorFunction,
+    b: np.ndarray,
+    x0: np.ndarray,
+    tol: float = 1e-5,
+) -> Tuple[np.ndarray, int, np.ndarray]:
+    N = len(x0)
+    i = 0
+    x = x0
+    r = b - A_func(x0)
+
+    while i < N and tol < la.norm(A_func(x) - b):
+        alpha = np.inner(r, r) / (np.dot(r.T, A_func(r)))
+        x += alpha * r
+        i += 1
+        r = b - A_func(x)
+
+    return x, i, r
+
+
+def conjugate_gradient(
+    A_func: VectorFunction,
+    b: np.ndarray,
+    x0: np.ndarray,
+    pre_cond: VectorFunction = identity,
+    tol: float = 1e-5,
+) -> Tuple[np.ndarray, int, np.ndarray]:
     N = len(x0)
     i = 0
     r = b - A_func(x0)
@@ -22,18 +64,6 @@ def conjugate_gradient(A_func, b, x0, tol, pre_cond):
         i += 1
 
     return x, i, r
-
-
-def identity(r):
-    return r
-
-
-def pre_cond_jac(v):
-    u = np.zeros_like(v)
-    for i in range(jac_iter):
-        u += 1 / 4 * (v - A_func(u))
-
-    return u
 
 
 if __name__ == "__main__":
@@ -57,15 +87,14 @@ if __name__ == "__main__":
         b = np.reshape(B, (n ** 2,))
         return B, b
 
-    tol = 10 ** -5
-
-    for n in range(20, 220, 20):
+    for n in range(20, 140, 20):
         x0 = np.zeros(n ** 2)
         B, b = b_def(n)
 
-        x, iterNull, _ = conjugate_gradient(A_func, b, x0, tol, identity)
+        x1, iter_sd, _ = steepest_descent(A_func, b, x0)
+        x2, iter_id, _ = conjugate_gradient(A_func, b, x0, identity)
         jac_iter = 2
-        x, iterJac2, _ = conjugate_gradient(A_func, b, x0, tol, pre_cond_jac)
+        x, iter_jac_2, _ = conjugate_gradient(A_func, b, x0, pre_cond_jac)
         jac_iter = 4
-        x, iterJac4, _ = conjugate_gradient(A_func, b, x0, tol, pre_cond_jac)
-        print(n, iterNull, iterJac2, iterJac4, sep="\t\t")
+        x, iter_jac_4, _ = conjugate_gradient(A_func, b, x0, pre_cond_jac)
+        print(n, iter_sd, iter_id, iter_jac_2, iter_jac_4, sep="\t\t")
