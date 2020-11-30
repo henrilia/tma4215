@@ -3,7 +3,10 @@ from typing import Callable
 from scipy.integrate import quad
 
 
-def lagrange_basis(t: np.ndarray, n: int, i: int):
+VectorFunc = Callable[[np.ndarray], np.ndarray]
+
+
+def lagrange_basis(t: np.ndarray, n: int, i: int) -> float:
     y = 1
     for k in range(n):
         if k == i:
@@ -13,19 +16,21 @@ def lagrange_basis(t: np.ndarray, n: int, i: int):
     return y
 
 
-def midpoint(a: float, b: float, f: Callable) -> float:
+def midpoint(a: float, b: float, f: Callable[[float], float]) -> float:
     return (b - a) * f((a + b) / 2)
 
 
-def trapezoidal(a: float, b: float, f: Callable) -> float:
+def trapezoidal(a: float, b: float, f: Callable[[float], float]) -> float:
     return (b - a) / 2 * (f(a) + f(b))
 
 
-def simpson(a: float, b: float, f: Callable) -> float:
+def simpson(a: float, b: float, f: Callable[[float], float]) -> float:
     return (b - a) / 6 * (f(a) + 4 * f((a + b) / 2) + f(b))
 
 
-def newton_cotes(a: float, b: float, n: int, f: Callable, closed=True) -> float:
+def newton_cotes(
+    a: float, b: float, n: int, f: Callable[[float], float], closed=True
+) -> float:
     x = np.linspace(a, b, n)
     w = np.zeros_like(x)
     if closed:
@@ -43,7 +48,7 @@ def newton_cotes(a: float, b: float, n: int, f: Callable, closed=True) -> float:
     return (b - a) / n * sum(w * f(x))
 
 
-def composite_trapezoidal(a: float, b: float, f: Callable, m: int) -> float:
+def composite_trapezoidal(a: float, b: float, f: VectorFunc, m: int) -> float:
     h = (b - a) / 2 ** m
     arr = np.arange(1, 2 ** m - 1)
     T = np.sum(f(a + arr * h))
