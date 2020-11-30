@@ -1,27 +1,46 @@
 import numpy as np
+from typing import Callable
+
+FloatFunc = Callable[[float], float]
 
 
-def _poly_newton_coefficient(x: np.ndarray, y: np.ndarray):
-    m = len(x)
+def divided_difference(x: np.ndarray, f: FloatFunc) -> float:
+    if type(x) is not np.ndarray:
+        return f(x)
+    elif len(x) == 1:
+        return f(x)
+    elif len(x) == 2:
+        return (f(x[1]) - f(x[0])) / (x[1] - x[0])
+    else:
+        return (divided_difference(x[1:], f) - divided_difference(x[:-1], f)) / (
+            x[-1] - x[0]
+        )
 
-    for k in range(1, m):
-        y[k:m] = (y[k:m] - y[k - 1]) / (x[k:m] - x[k - 1])
 
-    return y
+def divided_difference_y(x: np.ndarray, y: np.ndarray) -> float:
+    if type(x) is not np.ndarray:
+        return y
+    elif len(x) == 1:
+        return y
+    elif len(x) == 2:
+        return (y[1] - y[0]) / (x[1] - x[0])
+    else:
+        return (
+            divided_difference_y(x[1:], y[1:]) - divided_difference_y(x[:-1], y[:-1])
+        ) / (x[-1] - x[0])
 
 
-def newton_interpolation(x: np.ndarray, x0: np.ndarray, y0: np.ndarray):
-    if len(set(x0)) != len(x0):
-        raise Exception("Cannot have multiple entries of same x value")
+def newton_interpolation(x: np.ndarray, x0: np.ndarray, y0: np.ndarray) -> np.ndarray:
+    N = np.ones_like(x) * divided_difference_y(x0[0], y0[0])
+    for j in range(1, len(x0) + 1):
+        a = divided_difference_y(x0[:j], y0[:j])
+        n = np.ones_like(x)
 
-    a = _poly_newton_coefficient(x0, y0)
-    n = len(x0) - 1
-    p = a[n]
+        for i in range(j - 1):
+            n = n * (x - x0[i])
 
-    for k in range(1, n + 1):
-        p = a[n - k] + (x - x0[n - k]) * p
-
-    return p
+        N += a * n
+    return N
 
 
 if __name__ == "__main__":
@@ -31,7 +50,7 @@ if __name__ == "__main__":
         return x ** 5 - 5 * x ** 4 - 10 * x ** 2 + x - 10
 
     x0 = np.arange(0, 10, 2)
-    y0 = x0 ** 5 - 5 * x0 ** 4 - 10 * x0 ** 2 + x0 - 10
+    y0 = func(x0)
 
     x = np.arange(0, 10, 0.1)
 
