@@ -87,6 +87,7 @@ if __name__ == "__main__":
         b = np.reshape(B, (n ** 2,))
         return B, b
 
+    print("Iterations\tSteepest desc\tConj grad\tjac_iter2\tjac_iter4")
     for n in range(20, 140, 20):
         x0 = np.zeros(n ** 2)
         B, b = b_def(n)
