@@ -1,0 +1,114 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[fleqn]{amsmath}
+\usepackage{amsfonts}
+\usepackage[utf8]{inputenc}
+
+\usepackage{multicol}
+
+\usepackage[english]{babel}
+
+\usepackage[margin=18mm, tmargin=30mm]{geometry}
+
+\pagestyle{myheadings}
+\markright{Henrik Lia \hfill Fall 2020}
+\pagenumbering{gobble}
+
+\newcommand{\derivative}[2]{\frac{\partial #1}{\partial #2}}
+
+\begin{document}
+\begin{gather*}
+    \textbf{Linear multistep methods} \\
+    \sum_{l=0}^k \alpha_l y_{n+l} = h \sum_{l=0}^k \beta_l f_{n+l}
+\end{gather*}
+\begin{gather*}
+    C_0 = \sum_l^k\alpha_l, \quad C_q = \frac{1}{q!}\sum_{l=0}^k(l^q\alpha_l-ql^{q-1}\beta_l), \quad q = 1,2,\dots
+\end{gather*}
+\begin{gather*}
+    \text{Consistent if $C_0 = C_1 = 0$}
+\end{gather*}
+\begin{gather*}
+    \text{Of order $p$ if $C_0 = C_1 = \dots = C_p = 0$}
+\end{gather*}
+\begin{gather*}
+    \text{Characteristic polynomial:} \\
+    \rho(r) = \sum_{l=0}^k\alpha_l r^l \\
+    \text{Zero-stable if roots satisfy} \\
+    \text{1. $|r_i| \leq 1$, for $i = 1, 2, \dots, k$} \\
+    \text{2. $|r_i| < 1$ if $r_i$ is a multiple root.}
+\end{gather*}
+\begin{gather*}
+    \text{First Dahlquist barrier:} \\
+    \text{Order $p$ of a zero-stable $k$-step method satisfies} \\
+    p \leq k + 2 \quad \text{if $k$ is even,} \\
+    p \leq k + 1 \quad \text{if $k$ is odd,} \\
+    p \leq k \quad \text{if $\beta_k \leq 0$.} \\
+\end{gather*}
+\begin{gather*}
+    \textbf{Runge-Kutta methods} \\
+    k_1 = f(t_n,y_n), \\
+    k_2 = f(t_n + c_2h, y_n + ha_{21}k_1), \\
+    k_3 = f(t_n + c_3h, y_n + h(a_{31}k_1 + a_{32}k_2)), \\
+    \vdots \\
+    k_s = f(t_n + c_sh, y_n + h\sum_{j=1}^{s-1}a_{sj}k_j), \\
+    y_{n+1} = y_n + h\sum_{i=1}^sb_ik_i
+\end{gather*}
+\begin{gather*}
+    \text{Butcher-tableaux:} \\
+    \begin{array}{c|cccc}
+        c_1    & a_{11} & a_{12} & \dots & a_{1s} \\
+        c_2    & a_{21} & a_{22} & \dots & a_{2s} \\
+        \vdots & \vdots &        &       & \vdots \\
+        c_s    & a_{s1} & a_{s2} & \dots & a_{ss} \\
+        \hline
+               & b_1    & b_2    & \dots & b_s
+    \end{array}
+\end{gather*}
+\newpage
+
+\textbf{\Large Error estimates}
+\begin{gather*}
+    \textbf{Energy norm:} \\
+    \|\mathbf{x}\|_\text{A} =  \|\text{A}^{1/2}\mathbf{x}\|_2 = (\text{A}\mathbf{x},\mathbf{x})^{1/2}
+\end{gather*}
+\begin{gather*}
+    \textbf{Steepest descent:} \\
+    \|\mathbf{e}^{(k+1)}\|_\text{A} \leq \frac{K_2(\text{A})-1}{K_2(\text{A})+1}\|\mathbf{e}^{(k)}\|_\text{A}
+\end{gather*}
+\begin{gather*}
+    \textbf{Conjugate gradient:} \\
+    \|\mathbf{e}^{(k)}\|_\text{A} \leq \frac{2c^k}{1+c^{2k}}\|\mathbf{e}^{(0)}\|_\text{A}, \quad
+    \text{with } c = \frac{\sqrt{K_2(\text{A})}-1}{\sqrt{K_2(\text{A})}+1}
+\end{gather*}
+\begin{gather*}
+    \textbf{Runge-Kutta methods: (local error)} \\
+    le_{n+1} = \hat{y}_{n+1}-y_{n+1} = h\sum_{i=1}^s(\hat{b}_i-b_i)k_i
+\end{gather*}
+\begin{gather*}
+    \text{Stepsize control:} \\
+    h_{new} = P\cdot \left( \frac{Tol}{\|le_{n+1}\|} \right)^{\frac{1}{p+1}}h_n
+\end{gather*}
+\begin{gather*}
+    \textbf{Polynomial interpolation:} \\
+    \text{Lagrange form:} \\
+    E_n(x) = f(x)- \Pi_nf(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\omega_{n+1}(x), \quad
+    \omega_{n+1}(x) = \prod_{i=0}^n(x-x_i) \\
+    \text{Newton form:} \\
+    E_n(x) = \omega_{n+1}(x)f[x_0,\dots,x_n,x]
+\end{gather*}
+\begin{gather*}
+    \textbf{Single Interpolatory quadratures:} \\
+    \text{Midpoint formula} \quad E_0(f) = \frac{h^3}{3}f''(\xi), \quad h = \frac{b-a}{2} \\
+    \text{Trapezoidal formula} \quad E_1(f) = \frac{h^3}{12}f''(\xi), \quad h = b-a \\
+    \text{Simposons formula} \quad E_2(f) = -\frac{h^5}{90}f^{(4)}(\xi), \quad h = \frac{b-a}{2} \\
+\end{gather*}
+\begin{gather*}
+    \textbf{Composite Interpolatory quadratures:} \\
+    \text{Midpoint formula} \quad E_{0,m}(f) = \frac{b-a}{24}H^2f''(\xi), \quad H = \frac{b-a}{m} \\
+    \text{Trapezoidal formula} \quad E_{1,m}(f) = -\frac{b-a}{12}H^2f''(\xi), \quad H = \frac{b-a}{m}\\
+    \text{Simposons formula} \quad E_{2,m}(f) = -\frac{b-a}{180}(H/2)^4f^{(4)}(\xi), \quad H = \frac{b-a}{m} \\
+\end{gather*}
+\begin{gather*}
+    \textbf{Newton-Cotes quadrature:} \\
+    \text{p. 400-401, 404-405}
+\end{gather*}
+\end{document}
