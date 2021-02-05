@@ -62,6 +62,53 @@ class CubicSpline:
             + (self.y[i] / self.h[i] - self.z[i] * self.h[i] / 6) * (self.t[i + 1] - x)
         )
 
+    def derivative(self, x: np.ndarray):
+        y = np.zeros_like(x)
+        for i in range(len(y)):
+            y[i] = self._derivative(x[i])
+
+        return y
+
+    def _derivative(self, x: float):
+
+        i = None
+        for j in range(len(self.t) - 1):
+            if x >= self.t[j] and x < self.t[j + 1]:
+                i = j
+                break
+        else:
+            raise Exception("x not in interval of spline")
+
+        return (
+            -self.z[i] / (2 * self.h[i]) * (self.t[i + 1] - x) ** 2
+            + self.z[i + 1] / (2 * self.h[i]) * (x - self.t[i]) ** 2
+            + self.y[i + 1] / self.h[i]
+            - self.z[i + 1] * self.h[i] / 6
+            - self.y[i] / self.h[i]
+            + self.z[i] * self.h[i] / 6
+        )
+
+    def second_derivative(self, x: np.ndarray):
+        y = np.zeros_like(x)
+        for i in range(len(y)):
+            y[i] = self._second_derivative(x[i])
+
+        return y
+
+    def _second_derivative(self, x: float):
+
+        i = None
+        for j in range(len(self.t) - 1):
+            if x >= self.t[j] and x < self.t[j + 1]:
+                i = j
+                break
+        else:
+            raise Exception("x not in interval of spline")
+
+        return self.z[i] / self.h[i] * (self.t[i + 1] - x) + self.z[i + 1] / (
+            self.h[i]
+        ) * (x - self.t[i])
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -79,10 +126,13 @@ if __name__ == "__main__":
     x = np.arange(0, 10, 0.001)
 
     y = cs.approximate(x)
-
+    dy = cs.derivative(x)
+    ddy = cs.second_derivative(x)
     plt.plot(x, func(x))
     plt.plot(x, y)
-    plt.legend(["Real function", "Spline"])
+    plt.plot(x, dy)
+    plt.plot(x, ddy)
+    plt.legend(["Real function", "Spline", "derivative", "second derivative"])
     plt.title("Cubic spline")
     plt.grid()
     plt.show()

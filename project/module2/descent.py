@@ -1,10 +1,7 @@
 import numpy as np
 import scipy.linalg as la
-from typing import Callable, Tuple
-
-
-VectorFunction = Callable[[np.ndarray], np.ndarray]
-
+from typing import Tuple
+from project.utils import VectorFunction
 
 def identity(r: np.ndarray) -> np.ndarray:
     return r

@@ -1,9 +1,7 @@
 import numpy as np
 from typing import Callable
 from scipy.integrate import quad
-
-
-VectorFunc = Callable[[np.ndarray], np.ndarray]
+from project.utils import FloatFunction, timeit, VectorFunction
 
 
 def lagrange_basis(t: np.ndarray, n: int, i: int) -> float:
@@ -16,21 +14,20 @@ def lagrange_basis(t: np.ndarray, n: int, i: int) -> float:
     return y
 
 
-def midpoint(a: float, b: float, f: Callable[[float], float]) -> float:
+def midpoint(a: float, b: float, f: FloatFunction) -> float:
     return (b - a) * f((a + b) / 2)
 
 
-def trapezoidal(a: float, b: float, f: Callable[[float], float]) -> float:
+def trapezoidal(a: float, b: float, f: FloatFunction) -> float:
     return (b - a) / 2 * (f(a) + f(b))
 
 
-def simpson(a: float, b: float, f: Callable[[float], float]) -> float:
+def simpson(a: float, b: float, f: FloatFunction) -> float:
     return (b - a) / 6 * (f(a) + 4 * f((a + b) / 2) + f(b))
 
 
-def newton_cotes(
-    a: float, b: float, n: int, f: Callable[[float], float], closed=True
-) -> float:
+@timeit
+def newton_cotes(a: float, b: float, n: int, f: FloatFunction, closed=True) -> float:
     x = np.linspace(a, b, n)
     w = np.zeros_like(x)
     if closed:
@@ -48,7 +45,8 @@ def newton_cotes(
     return (b - a) / n * sum(w * f(x))
 
 
-def composite_trapezoidal(a: float, b: float, f: VectorFunc, m: int) -> float:
+@timeit
+def composite_trapezoidal(a: float, b: float, f: VectorFunction, m: int) -> float:
     h = (b - a) / 2 ** m
     arr = np.arange(1, 2 ** m - 1)
     T = np.sum(f(a + arr * h))
@@ -65,10 +63,10 @@ if __name__ == "__main__":
 
     a, b = (-1, 1)
 
-    print(newton_cotes(a, b, 1, func))
-    print(newton_cotes(a, b, 2, func))
-    print(newton_cotes(a, b, 4, func))
-    print(newton_cotes(a, b, 5, func))
-    print(newton_cotes(a, b, 20, func))
+    print(newton_cotes(a, b, n=1, f=func))
+    print(newton_cotes(a, b, n=2, f=func))
+    print(newton_cotes(a, b, n=4, f=func))
+    print(newton_cotes(a, b, n=5, f=func))
+    print(newton_cotes(a, b, n=20, f=func))
     print(trapezoidal(a, b, func))
-    print(composite_trapezoidal(a, b, func, 10))
+    print(composite_trapezoidal(a, b, f=func, m=10))

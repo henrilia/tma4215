@@ -1,10 +1,9 @@
 import numpy as np
-from typing import Callable
 
-FloatFunc = Callable[[float], float]
+from project.utils import FloatFunction
 
 
-def divided_difference(x: np.ndarray, f: FloatFunc) -> float:
+def divided_difference(x: np.ndarray, f: FloatFunction) -> float:
     if type(x) is not np.ndarray:
         return f(x)
     elif len(x) == 1:

@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from cubic_spline import CubicSpline
-from lagrange import lagrange
+from project.module5.cubic_spline import CubicSpline
+from project.module5.lagrange_interpolation import lagrange
 
 
 def func(x):

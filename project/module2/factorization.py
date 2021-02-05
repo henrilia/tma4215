@@ -58,7 +58,7 @@ def backward_sub(U: np.ndarray, b: np.ndarray) -> np.ndarray:
 @is_valid
 def LUP(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     n = A.shape[0]
-
+    A = deepcopy(A)
     P = np.arange(n)
 
     for k in range(n):
@@ -89,6 +89,14 @@ def cholesky(A: np.ndarray) -> np.ndarray:
 
     A[-1, -1] = np.sqrt(A[-1, -1])
     return np.tril(A)
+
+
+def solve(A, b):
+    L = cholesky(A)
+
+    y = forward_sub(L, b)
+    x = backward_sub(L.T, y)
+    return x
 
 
 if __name__ == "__main__":
